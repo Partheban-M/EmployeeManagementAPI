@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using EmployeeManagementAPI.DTOs;
 
 namespace EmployeeManagementAPI.Controllers
 {
@@ -23,36 +24,44 @@ namespace EmployeeManagementAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(User user)
+        public async Task<IActionResult> Register(RegisterDto request)
         {
             var existingUser = await _context.Users
-                .FirstOrDefaultAsync(x => x.Username == user.Username);
+                .FirstOrDefaultAsync(x => x.Username == request.Username);
 
             if (existingUser != null)
             {
                 return BadRequest("Username already exists");
             }
 
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            var user = new User
+            {
+                Username = request.Username,
+                Password = BCrypt.Net.BCrypt.HashPassword(request.Password)
+            };
 
             _context.Users.Add(user);
+
             await _context.SaveChangesAsync();
 
             return Ok("User registered successfully");
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(User user)
+        public async Task<IActionResult> Login(LoginDto request)
         {
             var existingUser = await _context.Users
-                .FirstOrDefaultAsync(x =>
-                    x.Username == user.Username &&
-                    x.Password == user.Password);
+                .FirstOrDefaultAsync(x => x.Username == request.Username);
 
-            if (existingUser == null || !BCrypt.Net.BCrypt.Verify(user.Password, existingUser.Password))
+            if (existingUser == null ||
+                !BCrypt.Net.BCrypt.Verify(
+                    request.Password,
+                    existingUser.Password))
             {
                 return Unauthorized("Invalid username or password");
             }
+
+            var token = GenerateJwtToken(existingUser);
 
             return Ok(new
             {
