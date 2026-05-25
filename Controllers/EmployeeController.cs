@@ -61,6 +61,7 @@ namespace EmployeeManagementAPI.Controllers
 
             return Ok(updatedEmployee);
         }
+        
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
@@ -73,6 +74,21 @@ namespace EmployeeManagementAPI.Controllers
             }
 
             return Ok("Employee deleted successfully");
+        }
+        [HttpGet("paginated")]
+        public async Task<IActionResult> GetEmployeesPaginated(
+            int pageNumber = 1,
+            int pageSize = 10)
+        {
+            var employees = await _employeeService.GetEmployeesPaginated(pageNumber, pageSize);
+            return Ok(employees);
+        }
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchEmployees(string name)
+        {
+            _logger.LogInformation("Searching employees with name: {Name}", name);
+            var employees = await _employeeService.SearchEmployees(name);
+            return Ok(employees);
         }
     }
 }
