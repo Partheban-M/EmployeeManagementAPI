@@ -11,19 +11,24 @@ namespace EmployeeManagementAPI.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
+        private readonly ILogger<EmployeeController> _logger;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeeController(IEmployeeService employeeService,ILogger<EmployeeController> logger)
         {
             _employeeService = employeeService;
+            _logger = logger;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetEmployees()
         {
+            _logger.LogInformation("Fetching all employees");
+
             var employees = await _employeeService.GetAllEmployees();
+
             return Ok(employees);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployeeById(int id)
         {
