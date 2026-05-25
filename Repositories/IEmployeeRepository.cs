@@ -13,5 +13,6 @@ namespace EmployeeManagementAPI.Repositories
             int pageNumber,
             int pageSize
         );
+        Task<List<Employee>> SearchEmployees(string name);
     }
 }
