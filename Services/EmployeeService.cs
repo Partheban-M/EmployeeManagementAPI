@@ -36,5 +36,15 @@ namespace EmployeeManagementAPI.Services
         {
             return await _employeeRepository.DeleteEmployee(id);
         }
+        public async Task<List<Employee>> SearchEmployees(string name)
+        {
+            return await _employeeRepository.SearchEmployees(name);
+        }
+        public async Task<List<Employee>> GetEmployeesPaginated(
+            int pageNumber,
+            int pageSize)
+        {
+            return await _employeeRepository.GetEmployeesPaginated(pageNumber, pageSize);
+        }
     }
 }
