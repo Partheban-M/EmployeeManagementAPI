@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace EmployeeManagementAPI.Models
 {
@@ -6,11 +6,13 @@ namespace EmployeeManagementAPI.Models
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        [Required]
+        public string Name { get; set; } = string.Empty;
 
-        public string Department { get; set; }
+        [Required]
+        public string Department { get; set; } = string.Empty;
 
-        [Column(TypeName = "decimal(18,2)")]
+        [Range(1, 1000000)]
         public decimal Salary { get; set; }
     }
 }
