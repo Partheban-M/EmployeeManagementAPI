@@ -46,6 +46,7 @@ namespace EmployeeManagementAPI.Repositories
             await _context.SaveChangesAsync();
             return employee;
         }
+        
 
         public async Task<bool> DeleteEmployee(int id)
         {
@@ -60,6 +61,22 @@ namespace EmployeeManagementAPI.Repositories
             await _context.SaveChangesAsync();
 
             return true;
+        }
+        public async Task<List<Employee>> GetEmployeesPaginated(
+            int pageNumber,
+            int pageSize
+        )
+        {
+            return await _context.Employees
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+        public async Task<List<Employee>> SearchEmployees(string name)
+        {
+            return await _context.Employees
+                .Where(e => e.Name.Contains(name))
+                .ToListAsync();
         }
     }
 }
