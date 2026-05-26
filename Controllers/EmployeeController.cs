@@ -104,5 +104,27 @@ namespace EmployeeManagementAPI.Controllers
             var employees = await _employeeService.SortEmployeesBySalary(order);
             return Ok(employees);
         }
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadFile(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded");
+            }
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            var filePath = Path.Combine(folderPath, file.FileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            return Ok(new
+            {
+                message = "File uploaded successfully",fileName = file.FileName
+            });
+        }    
     }
 }
