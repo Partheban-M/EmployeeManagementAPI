@@ -78,5 +78,20 @@ namespace EmployeeManagementAPI.Repositories
                 .Where(e => e.Name.Contains(name))
                 .ToListAsync();
         }
+        public async Task<List<Employee>> FilterEmployeesByDepartment(string department)
+        {
+            return await _context.Employees
+                .Where(e => e.Department == department)
+                .ToListAsync();
+        }
+        public async Task<List<Employee>> SortEmployeesBySalary(string order)
+        {
+            if (order.ToLower() == "desc")
+            {
+                return await _context.Employees.OrderByDescending(x => x.Salary).ToListAsync();
+            }
+            return await _context.Employees.OrderBy(x => x.Salary).ToListAsync();
+        }
+        
     }
 }
