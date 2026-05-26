@@ -14,5 +14,7 @@ namespace EmployeeManagementAPI.Repositories
             int pageSize
         );
         Task<List<Employee>> SearchEmployees(string name);
+        Task<List<Employee>> FilterEmployeesByDepartment(string department);
+        Task<List<Employee>> SortEmployeesBySalary(string order);
     }
 }
