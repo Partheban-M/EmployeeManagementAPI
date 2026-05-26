@@ -2,6 +2,8 @@ using EmployeeManagementAPI.Models;
 using EmployeeManagementAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
+using EmployeeManagementAPI.DTOs;
 
 namespace EmployeeManagementAPI.Controllers
 {
@@ -12,22 +14,24 @@ namespace EmployeeManagementAPI.Controllers
     {
         private readonly IEmployeeService _employeeService;
         private readonly ILogger<EmployeeController> _logger;
+        private readonly IMapper _mapper;
 
-        public EmployeeController(IEmployeeService employeeService,ILogger<EmployeeController> logger)
+        public EmployeeController(IEmployeeService employeeService,ILogger<EmployeeController> logger, IMapper mapper)
         {
             _employeeService = employeeService;
             _logger = logger;
+            _mapper = mapper;
         }
-
         [HttpGet]
-        public async Task<IActionResult> GetEmployees()
+        public async Task<IActionResult> GetAllEmployees()
         {
-            _logger.LogInformation("Fetching all employees");
-
             var employees = await _employeeService.GetAllEmployees();
+            _logger.LogInformation("Fetching all employees");
+            var result = _mapper.Map<List<EmployeeDto>>(employees);
 
-            return Ok(employees);
+            return Ok(result);
         }
+
         [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployeeById(int id)
@@ -38,20 +42,23 @@ namespace EmployeeManagementAPI.Controllers
             {
                 return NotFound("Employee not found");
             }
-
-            return Ok(employee);
+            var result = _mapper.Map<EmployeeDto>(employee);
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddEmployee(Employee employee)
+        public async Task<IActionResult> AddEmployee(EmployeeDto employeeDto)
         {
+            var employee = _mapper.Map<Employee>(employeeDto);
             var createdEmployee = await _employeeService.AddEmployee(employee);
-            return Ok(createdEmployee);
+            var result = _mapper.Map<EmployeeDto>(createdEmployee);
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmployee(int id, Employee employee)
+        public async Task<IActionResult> UpdateEmployee(int id, EmployeeDto employeeDto)
         {
+            var employee = _mapper.Map<Employee>(employeeDto);
             var updatedEmployee = await _employeeService.UpdateEmployee(id, employee);
 
             if (updatedEmployee == null)
@@ -59,7 +66,8 @@ namespace EmployeeManagementAPI.Controllers
                 return NotFound("Employee not found");
             }
 
-            return Ok(updatedEmployee);
+            var result = _mapper.Map<EmployeeDto>(updatedEmployee);
+            return Ok(result);
         }
         
 
@@ -75,6 +83,7 @@ namespace EmployeeManagementAPI.Controllers
 
             return Ok("Employee deleted successfully");
         }
+
         [HttpGet("paginated")]
         public async Task<IActionResult> GetEmployeesPaginated(
             int pageNumber = 1,
@@ -83,6 +92,7 @@ namespace EmployeeManagementAPI.Controllers
             var employees = await _employeeService.GetEmployeesPaginated(pageNumber, pageSize);
             return Ok(employees);
         }
+
         [HttpGet("search")]
         public async Task<IActionResult> SearchEmployees(string name)
         {
@@ -97,6 +107,7 @@ namespace EmployeeManagementAPI.Controllers
             var employees = await _employeeService.FilterEmployeesByDepartment(department);
             return Ok(employees);
         }
+
         [HttpGet("sort")]
         public async Task<IActionResult> SortEmployeesBySalary(string order)
         {
