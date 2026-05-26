@@ -10,10 +10,9 @@ namespace EmployeeManagementAPI.Services
         Task<Employee?> UpdateEmployee(int id, Employee employee);
         Task<bool> DeleteEmployee(int id);
         Task<List<Employee>> SearchEmployees(string name);
-        Task<List<Employee>> GetEmployeesPaginated(
-            int pageNumber,
-            int pageSize);
-
+        Task<List<Employee>> GetEmployeesPaginated(int pageNumber,int pageSize);
+        Task<List<Employee>> FilterEmployeesByDepartment(string department);
+        Task<List<Employee>> SortEmployeesBySalary(string order);
 
     }
 }
