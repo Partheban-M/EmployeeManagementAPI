@@ -4,6 +4,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using EmployeeManagementAPI.DTOs;
+namespace EmployeeManagementAPI.DTOs
+{
+    public class ApiResponse<T>
+    {
+        public bool Success { get; set; }
+
+        public string Message { get; set; } = string.Empty;
+
+        public T? Data { get; set; }
+    }
+}
 
 namespace EmployeeManagementAPI.Controllers
 {
@@ -25,11 +36,15 @@ namespace EmployeeManagementAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
         {
+             _logger.LogInformation("Fetching all employees");
             var employees = await _employeeService.GetAllEmployees();
-            _logger.LogInformation("Fetching all employees");
             var result = _mapper.Map<List<EmployeeDto>>(employees);
-
-            return Ok(result);
+            return Ok(new ApiResponse<List<EmployeeDto>>
+            {
+                Success = true,
+                Message = "Employees fetched successfully",
+                Data = result
+            });
         }
 
         [Authorize(Roles = "Admin")]
@@ -37,39 +52,67 @@ namespace EmployeeManagementAPI.Controllers
         public async Task<IActionResult> GetEmployeeById(int id)
         {
             var employee = await _employeeService.GetEmployeeById(id);
-
             if (employee == null)
             {
-                return NotFound("Employee not found");
+                return NotFound(new ApiResponse<EmployeeDto>
+                {
+                    Success = false,
+                    Message = "Employee not found",
+                    Data = null
+               });
             }
             var result = _mapper.Map<EmployeeDto>(employee);
-            return Ok(result);
+            return Ok(new ApiResponse<EmployeeDto>
+            {
+                Success = true,
+                Message = "Employee fetched successfully",
+                Data = result
+            });
         }
-
         [HttpPost]
         public async Task<IActionResult> AddEmployee(EmployeeDto employeeDto)
         {
             var employee = _mapper.Map<Employee>(employeeDto);
+
             var createdEmployee = await _employeeService.AddEmployee(employee);
+
             var result = _mapper.Map<EmployeeDto>(createdEmployee);
-            return Ok(result);
+
+            return Ok(new ApiResponse<EmployeeDto>
+            {
+                Success = true,
+                Message = "Employee added successfully",
+                Data = result
+            });
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, EmployeeDto employeeDto)
         {
             var employee = _mapper.Map<Employee>(employeeDto);
+
             var updatedEmployee = await _employeeService.UpdateEmployee(id, employee);
 
             if (updatedEmployee == null)
             {
-                return NotFound("Employee not found");
+                return NotFound(new ApiResponse<EmployeeDto>
+                {
+                    Success = false,
+                    Message = "Employee not found",
+                    Data = null
+                });
             }
 
             var result = _mapper.Map<EmployeeDto>(updatedEmployee);
-            return Ok(result);
+
+            return Ok(new ApiResponse<EmployeeDto>
+            {
+                Success = true,
+                Message = "Employee updated successfully",
+                Data = result
+            });
         }
-        
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
@@ -78,10 +121,20 @@ namespace EmployeeManagementAPI.Controllers
 
             if (!result)
             {
-                return NotFound("Employee not found");
+                return NotFound(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Employee not found",
+                    Data = null
+                });
             }
 
-            return Ok("Employee deleted successfully");
+            return Ok(new ApiResponse<string>
+            {
+                Success = true,
+                Message = "Employee deleted successfully",
+                Data = null
+            });
         }
 
         [HttpGet("paginated")]
