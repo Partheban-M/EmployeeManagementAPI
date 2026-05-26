@@ -46,5 +46,13 @@ namespace EmployeeManagementAPI.Services
         {
             return await _employeeRepository.GetEmployeesPaginated(pageNumber, pageSize);
         }
+        public async Task<List<Employee>> FilterEmployeesByDepartment(string department)
+        {
+            return await _employeeRepository.FilterEmployeesByDepartment(department);
+        }
+        public async Task<List<Employee>> SortEmployeesBySalary(string order)
+        {
+            return await _employeeRepository.SortEmployeesBySalary(order);
+        }
     }
 }
