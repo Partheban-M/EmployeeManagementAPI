@@ -4,17 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using EmployeeManagementAPI.DTOs;
-namespace EmployeeManagementAPI.DTOs
-{
-    public class ApiResponse<T>
-    {
-        public bool Success { get; set; }
-
-        public string Message { get; set; } = string.Empty;
-
-        public T? Data { get; set; }
-    }
-}
 
 namespace EmployeeManagementAPI.Controllers
 {
@@ -27,7 +16,7 @@ namespace EmployeeManagementAPI.Controllers
         private readonly ILogger<EmployeeController> _logger;
         private readonly IMapper _mapper;
 
-        public EmployeeController(IEmployeeService employeeService,ILogger<EmployeeController> logger, IMapper mapper)
+        public EmployeeController(IEmployeeService employeeService, ILogger<EmployeeController> logger, IMapper mapper)
         {
             _employeeService = employeeService;
             _logger = logger;
@@ -36,7 +25,7 @@ namespace EmployeeManagementAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
         {
-             _logger.LogInformation("Fetching all employees");
+            _logger.LogInformation("Fetching all employees");
             var employees = await _employeeService.GetAllEmployees();
             var result = _mapper.Map<List<EmployeeDto>>(employees);
             return Ok(new ApiResponse<List<EmployeeDto>>
@@ -59,7 +48,7 @@ namespace EmployeeManagementAPI.Controllers
                     Success = false,
                     Message = "Employee not found",
                     Data = null
-               });
+                });
             }
             var result = _mapper.Map<EmployeeDto>(employee);
             return Ok(new ApiResponse<EmployeeDto>
@@ -187,8 +176,9 @@ namespace EmployeeManagementAPI.Controllers
             }
             return Ok(new
             {
-                message = "File uploaded successfully",fileName = file.FileName
+                message = "File uploaded successfully",
+                fileName = file.FileName
             });
-        }    
+        }
     }
 }

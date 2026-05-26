@@ -7,5 +7,6 @@ namespace EmployeeManagementAPI.DTOs
         public string Department { get; set; } = string.Empty;
 
         public decimal Salary { get; set; }
+        public int Id { get; set; }
     }
 }
