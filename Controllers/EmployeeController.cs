@@ -90,5 +90,19 @@ namespace EmployeeManagementAPI.Controllers
             var employees = await _employeeService.SearchEmployees(name);
             return Ok(employees);
         }
+        [HttpGet("filter")]
+        public async Task<IActionResult> FilterEmployeesByDepartment(string department)
+        {
+            _logger.LogInformation("Filtering employees by department: {Department}", department);
+            var employees = await _employeeService.FilterEmployeesByDepartment(department);
+            return Ok(employees);
+        }
+        [HttpGet("sort")]
+        public async Task<IActionResult> SortEmployeesBySalary(string order)
+        {
+            _logger.LogInformation("Sorting employees by salary in {Order} order", order);
+            var employees = await _employeeService.SortEmployeesBySalary(order);
+            return Ok(employees);
+        }
     }
 }
